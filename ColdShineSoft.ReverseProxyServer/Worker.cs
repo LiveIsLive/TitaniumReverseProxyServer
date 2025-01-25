@@ -93,14 +93,13 @@ namespace ColdShineSoft.ReverseProxyServer
 
 		private Task ProxyServer_BeforeRequest(object sender, Titanium.Web.Proxy.EventArguments.SessionEventArgs e)
 		{
-			if (e.HttpClient.IsHttps)
+			if (!e.HttpClient.IsHttps&&this.Config.ForceSSL)
 			{
-				e.HttpClient.Request.Host = this.Config.RequestBaseUri.Authority;
-				//string tempUrl = e.HttpClient.Request.Url;
-				//e.HttpClient.Request.Url = $"http://{e.HttpClient.Request.RequestUri.Authority}{e.HttpClient.Request.RequestUri.PathAndQuery}";
-				e.HttpClient.Request.RequestUri = new System.Uri(this.Config.RequestBaseUri, e.HttpClient.Request.RequestUri.PathAndQuery);
+				e.Redirect($"https://{e.HttpClient.Request.RequestUri.Authority}{e.HttpClient.Request.RequestUri.PathAndQuery}");
+				return Task.CompletedTask;
 			}
-			else e.Redirect($"https://{e.HttpClient.Request.RequestUri.Authority}{e.HttpClient.Request.RequestUri.PathAndQuery}");
+			e.HttpClient.Request.Host = this.Config.RequestBaseUri.Authority;
+			e.HttpClient.Request.RequestUri = new System.Uri(this.Config.RequestBaseUri, e.HttpClient.Request.RequestUri.PathAndQuery);
 			return Task.CompletedTask;
 		}
 
@@ -115,6 +114,8 @@ namespace ColdShineSoft.ReverseProxyServer
 					e.HttpClient.Response.Headers.AddHeader("Location", new System.Uri(location).PathAndQuery);
 				}
 			}
+			foreach (var header in this.Config.AddResponseHeaders)
+				e.HttpClient.Response.Headers.AddHeader(header.Key, header.Value);
 
 			return Task.CompletedTask;
 		}

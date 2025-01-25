@@ -25,5 +25,20 @@ namespace ColdShineSoft.ReverseProxyServer
 				return this._RequestBaseUri;
 			}
 		}
+
+		private System.Collections.Generic.Dictionary<string, string> _AddResponseHeaders = null!;
+		public System.Collections.Generic.Dictionary<string, string> AddResponseHeaders
+		{
+			get
+			{
+				if (this._AddResponseHeaders == null)
+					this._AddResponseHeaders = new Dictionary<string, string>();
+				return this._AddResponseHeaders;
+			}
+			set
+			{
+				this._AddResponseHeaders = value;
+			}
+		}
 	}
 }

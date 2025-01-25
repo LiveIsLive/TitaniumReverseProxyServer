@@ -1,5 +1,18 @@
 using ColdShineSoft.ReverseProxyServer;
 
+System.Net.ServicePointManager.SecurityProtocol = 0;
+foreach (System.Net.SecurityProtocolType type in System.Enum.GetValues(typeof(System.Net.SecurityProtocolType)))
+	try
+	{
+		System.Net.ServicePointManager.SecurityProtocol |= type;
+	}
+	catch (System.NotSupportedException exception)
+	{
+		System.Console.WriteLine(type + "£º" + exception.Message);
+	}
+System.Console.WriteLine(System.Net.ServicePointManager.SecurityProtocol);
+
+
 IHost host = Host.CreateDefaultBuilder(args)
 	.ConfigureAppConfiguration((hostContext, configBuilder)=>
 	{
